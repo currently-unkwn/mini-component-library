@@ -8,83 +8,129 @@ import VisuallyHidden from "../VisuallyHidden";
 
 const SIZES = {
   small: {
-    padding: "2px 0 2px 24px",
     fontSize: 14 / 16,
-    borderBottom: 1,
-    bottom: -5,
+    borderThickness: 1,
+    height: 24,
+    iconSize: 16,
   },
   large: {
-    padding: "5px 0 5px 36px",
     fontSize: 18 / 16,
-    borderBottom: 2,
-    bottom: 4,
+    borderThickness: 2,
+    height: 36,
+    iconSize: 24,
   },
 };
 
-const IconInput = ({ label, icon, width = 250, size, placeholder }) => {
+const IconInput = ({ label, icon, width = 250, size, ...delegated }) => {
   const styles = SIZES[size];
-  const iconSize = size === "small" ? 16 : 24;
 
   return (
     <Wrapper>
-      <IconWrapper for={label} style={{ "--bottom": styles.bottom + "px" }}>
-        <VisuallyHidden>{label}</VisuallyHidden>
-        <Icon id={icon} size={iconSize} />
+      <VisuallyHidden>{label}</VisuallyHidden>
+
+      <IconWrapper style={{ "--size": styles.iconSize + "px" }}>
+        <Icon id={icon} size={styles.iconSize} />
       </IconWrapper>
+
       <TextInput
         style={{
           "--width": width + "px",
-          "--fontSize": styles.fontSize + "rem",
-          "--borderBottom": styles.borderBottom + "px",
-          "--padding": styles.padding,
+          "--height": styles.height / 16 + "rem",
+          "--font-size": styles.fontSize + "rem",
+          "--border-thickness": styles.borderThickness + "px",
         }}
-        placeholder={placeholder}
-        id={label}
+        {...delegated}
       />
     </Wrapper>
   );
 };
 
-// padding, border, icon size, font size
+const Wrapper = styled.label`
+  position: relative;
+  color: ${COLORS.gray700};
 
-const IconWrapper = styled.label`
+  &:hover {
+    color: ${COLORS.black};
+  }
+`;
+
+const IconWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  bottom: var(--bottom);
-  margin: auto;
-  width: 24px;
-  height: 24px;
-  color: ${COLORS.gray500};
+  bottom: 0;
+  margin: auto 0;
+  height: var(--size);
+
   cursor: pointer;
 `;
 
 const TextInput = styled.input`
   width: var(--width);
-  padding: var(--padding);
-  font-size: var(--fontSize);
+  height: var(--height);
+  padding-left: var(--height);
+  font-size: var(--font-size);
   font-weight: 700;
-  color: ${COLORS.gray700};
-  background-color: transparent;
+  color: inherit;
   border: none;
-  border-bottom: var(--borderBottom) solid ${COLORS.black};
+  border-bottom: var(--border-thickness) solid ${COLORS.black};
+  outline-offset: 2px;
 
   &::placeholder {
     font-weight: 400;
     color: ${COLORS.gray500};
   }
-
-  &:focus {
-    outline-offset: 1px;
-  }
-`;
-
-const Wrapper = styled.div`
-  position: relative;
-
-  &:hover ${TextInput}, &:hover ${IconWrapper} {
-    color: ${COLORS.black};
-  }
 `;
 
 export default IconInput;
+
+// Solution with COMPOSITION
+
+// const IconInput = ({
+//   label,
+//   icon,
+//   width = 250,
+//   size,
+//   ...delegated
+// }) => {
+//   const iconSize = size === 'small' ? 16 : 24;
+//   const Input = size === 'small'
+//     ? SmallInput
+//     : LargeInput;
+//   return (
+//     <Wrapper>
+//       <IconWrapper style={{ '--size': iconSize + 'px' }}>
+//         <Icon id={icon} size={iconSize} />
+//       </IconWrapper>
+//       <Input
+//         {...delegated}
+//         style={{
+//           '--width': width + 'px',
+//         }}
+//       />
+//     </Wrapper>
+//   );
+// };
+// const TextInput = styled.input`
+//   width: var(--width);
+//   border: none;
+//   color: inherit;
+//   font-weight: 700;
+//   outline-offset: 2px;
+//   &::placeholder {
+//     font-weight: 400;
+//     color: ${COLORS.gray500};
+//   }
+// `;
+// const SmallInput = styled(TextInput)`
+//   height: 24px;
+//   font-size: ${14 / 16}rem;
+//   border-bottom: 1px solid ${COLORS.black};
+//   padding-left: 24px;
+// `;
+// const LargeInput = styled(TextInput)`
+//   height: 36px;
+//   font-size: ${18 / 16}rem;
+//   border-bottom: 2px solid ${COLORS.black};
+//   padding-left: 36px;
+// `;
